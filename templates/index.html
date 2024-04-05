@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobScrape360</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5 mb-4">JobScrape360</h1>
+
+    <div class="mb-4">
+        <div class="form-row">
+            <div class="col-md-3 mb-3">
+                <input type="text" id="search_query" class="form-control" placeholder="search keywords">
+            </div>
+            <div class="col-md-3 mb-3">
+                <input type="text" id="location_query" class="form-control" placeholder="location">
+            </div>
+            <div class="col-md-3 mb-3">
+                <button id="search_button" class="btn btn-primary btn-block" onclick="search_jobs()">Search</button>
+            </div>
+            <div class="col-md-3 mb-3">
+                <button id="scrape_button" class="btn btn-primary btn-block" onclick="scrape_jobs()">Scrape Jobs
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <ul class="list-group">
+            {% for job in naukri_jobs %}
+                <li class="list-group-item m-1">
+                    <h5 class="mb-1">{{ job.title }}</h5>
+                    <p class="mb-1">{{ job.company }}</p>
+                    <p class="mb-1">{{ job.location }}</p>
+                    <a href="{{ job.link }}" target="_blank" class="btn btn-primary btn-sm">Link</a>
+                    <small class="text-muted d-block mt-1">Experience: {{ job.experience }}</small>
+                    <small class="text-muted d-block">Salary: {{ job.salary }}</small>
+                    <small class="text-muted d-block">Description: {{ job.description }}</small>
+                    <small class="text-muted d-block">Posted Day: {{ job.posted_day }}</small>
+                    <small class="text-muted d-block">Tags: {{ job.tags }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="mt-4">
+        <ul class="list-group">
+            {% for job in indeed_jobs %}
+                <li class="list-group-item m-1">
+                    <h5 class="mb-1">{{ job.title }}</h5>
+                    <p class="mb-1">{{ job.company }}</p>
+                    <p class="mb-1">{{ job.location }}</p>
+                    <a href="{{ job.link }}" target="_blank" class="btn btn-primary btn-sm">Link</a>
+                    <small class="text-muted d-block mt-1">Tags: {{ job.tags }}</small>
+                    <small class="text-muted d-block">Description: {{ job.description }}</small>
+                    <small class="text-muted d-block">Posted Day:: {{ job.posted_day }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="mt-4">
+        <ul class="list-group">
+            {% for job in flex_jobs %}
+                <li class="list-group-item m-1">
+                    <h5 class="mb-1">{{ job.title }}</h5>
+                    <p class="mb-1">{{ job.location }}</p>
+                    <a href="{{ job.link }}" target="_blank" class="btn btn-primary btn-sm">Link</a>
+                    <small class="text-muted d-block mt-1">Posted Day:: {{ job.posted_day }}</small>
+                    <small class="text-muted d-block">Remote: {{ job.remote }}</small>
+                    <small class="text-muted d-block">Schedule: {{ job.schedule }}</small>
+                    <small class="text-muted d-block">Job Type: {{ job.job_type }}</small>
+                    <small class="text-muted d-block">Salary: {{ job.salary }}</small>
+                    <small class="text-muted d-block">Description: {{ job.description }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+</body>
+<script>
+    const search_jobs = async () => {
+        document.getElementById("search_button").disabled = true;
+        document.getElementById("scrape_button").disabled = true;
+
+        try {
+            let search_query = document.getElementById("search_query").value;
+            let location_query = document.getElementById("location_query").value;
+
+            const response = await fetch('/search-jobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    search_query: search_query,
+                    location_query: location_query
+                })
+            });
+
+            if (!response.ok) {
+                console.log('Network response was not ok');
+            }
+            document.documentElement.innerHTML = await response.text();
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            document.getElementById("search_button").disabled = false;
+            document.getElementById("scrape_button").disabled = false;
+        }
+    }
+
+    const scrape_jobs = async () => {
+        document.getElementById("search_button").disabled = true;
+        document.getElementById("scrape_button").disabled = true;
+
+        try {
+            let search_query = document.getElementById("search_query").value;
+            let location_query = document.getElementById("location_query").value;
+
+            const response = await fetch('/scrape-jobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    search_query: search_query,
+                    location_query: location_query
+                })
+            });
+            if (!response.ok) {
+                console.log('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            document.getElementById("search_button").disabled = false;
+            document.getElementById("scrape_button").disabled = false;
+        }
+    }
+</script>
+</html>
