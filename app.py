@@ -34,8 +34,6 @@ def scrape_jobs():
 def search_jobs():
     search_query: str = request.json.get('search_query')
     location_query: str = request.json.get('location_query')
-    location = location_query.split()[0]
-
     search_terms = search_query.split()
 
     naukri_jobs = []
@@ -50,7 +48,7 @@ def search_jobs():
                     NaukriJob.title.ilike(f'%{term}%'),
                     NaukriJob.description.ilike(f'%{term}%')
                 ),
-                NaukriJob.location.ilike(f'%{location}%')
+                NaukriJob.location.ilike(f'%{location_query}%')
             )
         ).all()
 
@@ -60,7 +58,7 @@ def search_jobs():
                     IndeedJob.title.ilike(f'%{term}%'),
                     IndeedJob.description.ilike(f'%{term}%')
                 ),
-                IndeedJob.location.ilike(f'%{location}%')
+                IndeedJob.location.ilike(f'%{location_query}%')
             )
         ).all()
 
@@ -70,7 +68,7 @@ def search_jobs():
                     FlexJobsJob.title.ilike(f'%{term}%'),
                     FlexJobsJob.description.ilike(f'%{term}%')
                 ),
-                FlexJobsJob.location.ilike(f'%{location}%')
+                FlexJobsJob.location.ilike(f'%{location_query}%')
             )
         ).all()
 
